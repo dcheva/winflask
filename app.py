@@ -1,5 +1,6 @@
 #!flask/bin/python
 from flask import Flask, jsonify, abort, make_response, request
+from pip._vendor.pyparsing import unicode
 
 app = Flask(__name__)
 
@@ -74,9 +75,19 @@ def delete_task(task_id):
     return jsonify({'result': True})
 
 
+@app.errorhandler(400)
+def bad_request(error):
+    return make_response(jsonify({'error': 'Bad request'}), 400)
+
+
 @app.errorhandler(401)
-def not_found(error):
-    return make_response(jsonify({'error': 'Unauthorized Error'}), 401)
+def unauthorized():
+    return make_response(jsonify({'error': 'Unauthorized access'}), 401)
+
+
+@app.errorhandler(403)
+def unauthorized():
+    return make_response(jsonify({'error': 'Forbidden'}), 403)
 
 
 @app.errorhandler(404)
@@ -85,12 +96,12 @@ def not_found(error):
 
 
 @app.errorhandler(405)
-def not_found(error):
+def not_allowed(error):
     return make_response(jsonify({'error': 'Method Not Allowed'}), 405)
 
 
 @app.errorhandler(410)
-def not_found(error):
+def gone(error):
     return make_response(jsonify({'error': 'Gone'}), 410)
 
 
